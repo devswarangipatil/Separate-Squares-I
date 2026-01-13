@@ -34,3 +34,53 @@ squares[i].length == 3
 0 <= xi, yi <= 109
 1 <= li <= 109
 The total area of all the squares will not exceed 1012.
+
+class Solution:
+    def separateSquares(self, squares: List[List[int]]) -> float:
+
+        def area_beneath_m(sorted_squares, m):
+            area_beneath = 0
+            for x, y, side in sorted_squares:
+
+                if y > m:
+                    break
+
+                if y + side <= m:
+                    area_beneath += side * side
+                    continue
+                
+                x_side = side
+                side = m - y
+                area_beneath += side * x_side
+            
+            return area_beneath
+
+
+        l, r, total_area = 0, 0, 0
+
+        for x, y, side in squares:
+            total_area += side * side
+            r = max(r, y + side)
+
+        target = total_area / 2
+        res_y = 0
+
+        sorted_squares = sorted(squares, key = lambda k: k[1])
+
+        while r - l > 1e-6:
+
+            m = (l + r) / 2
+
+            area_beneath = area_beneath_m(sorted_squares, m)
+            
+            # store the current line as a valid ans
+            res_y = m
+            
+            # moving pointers
+            if area_beneath >= target:
+                r = m
+            else:
+                l = m
+        
+        # return res_y
+        return res_y
